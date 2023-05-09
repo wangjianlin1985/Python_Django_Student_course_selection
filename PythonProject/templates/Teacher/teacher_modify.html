@@ -1,0 +1,90 @@
+{% load staticfiles %}
+{% include 'check_logstate.html' %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/teacher.css' %}" />
+<div id="teacher_EditDiv">
+	<form id="teacherModifyForm" enctype="multipart/form-data"  method="post">
+        {% csrf_token %}
+		<div>
+			<span class="label">教师编号:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="teacher_teacherNumber_modify" name="teacher.teacherNumber" value="{{ teacherNumber }}" style="width:200px" />
+			</span>
+		</div>
+
+		<div>
+			<span class="label">教师姓名:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="teacher_teacherName_modify" name="teacher.teacherName" style="width:200px" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">性别:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="teacher_teacherSex_modify" name="teacher.teacherSex" style="width:200px" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">出生日期:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="teacher_teacherBirthday_modify" name="teacher.teacherBirthday" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">入职日期:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="teacher_teacherArriveDate_modify" name="teacher.teacherArriveDate" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">身份证号:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="teacher_teacherCardNumber_modify" name="teacher.teacherCardNumber" style="width:200px" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">联系电话:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="teacher_teacherPhone_modify" name="teacher.teacherPhone" style="width:200px" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">教师照片:</span>
+			<span class="inputControl">
+				<img id="teacher_teacherPhotoImgMod" width="200px" border="0px"/><br/>
+				<input id="teacher_teacherPhotoMod" name="teacher.teacherPhoto" type="file" size="50" />
+			</span>
+		</div>
+		<div>
+			<span class="label">家庭地址:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="teacher_teacherAddress_modify" name="teacher.teacherAddress" style="width:200px" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">附加信息:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="teacher_teacherMemo_modify" name="teacher.teacherMemo" style="width:200px" />
+
+			</span>
+
+		</div>
+		<div class="operation">
+			<a id="teacherModifyButton" class="easyui-linkbutton">更新</a> 
+		</div>
+	</form>
+</div>
+<script src="{% static 'js/Teacher/teacher_modify.js' %}"></script>

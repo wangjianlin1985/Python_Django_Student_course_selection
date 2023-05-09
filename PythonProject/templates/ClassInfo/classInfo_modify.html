@@ -1,0 +1,65 @@
+{% load staticfiles %}
+{% include 'check_logstate.html' %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/classInfo.css' %}" />
+<div id="classInfo_EditDiv">
+	<form id="classInfoModifyForm" enctype="multipart/form-data"  method="post">
+        {% csrf_token %}
+		<div>
+			<span class="label">班级编号:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="classInfo_classNumber_modify" name="classInfo.classNumber" value="{{ classNumber }}" style="width:200px" />
+			</span>
+		</div>
+
+		<div>
+			<span class="label">班级名称:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="classInfo_className_modify" name="classInfo.className" style="width:200px" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">所属专业:</span>
+			<span class="inputControl">
+				<input class="textbox"  id="classInfo_classSpecialFieldNumber_specialFieldNumber_modify" name="classInfo.classSpecialFieldNumber.specialFieldNumber" style="width: auto"/>
+			</span>
+		</div>
+		<div>
+			<span class="label">成立日期:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="classInfo_classBirthDate_modify" name="classInfo.classBirthDate" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">班主任:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="classInfo_classTeacherCharge_modify" name="classInfo.classTeacherCharge" style="width:200px" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">联系电话:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="classInfo_classTelephone_modify" name="classInfo.classTelephone" style="width:200px" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">附加信息:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="classInfo_classMemo_modify" name="classInfo.classMemo" style="width:200px" />
+
+			</span>
+
+		</div>
+		<div class="operation">
+			<a id="classInfoModifyButton" class="easyui-linkbutton">更新</a> 
+		</div>
+	</form>
+</div>
+<script src="{% static 'js/ClassInfo/classInfo_modify.js' %}"></script>

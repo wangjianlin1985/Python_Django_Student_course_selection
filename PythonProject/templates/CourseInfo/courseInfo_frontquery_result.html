@@ -1,0 +1,306 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1 , user-scalable=no">
+<title>课程信息查询</title>
+<link href="{% static 'plugins/bootstrap.css' %}" rel="stylesheet">
+<link href="{% static 'plugins/bootstrap-dashen.css' %}" rel="stylesheet">
+<link href="{% static 'plugins/font-awesome.css' %}" rel="stylesheet">
+<link href="{% static 'plugins/animate.css' %}" rel="stylesheet">
+<link href="{% static 'plugins/bootstrap-datetimepicker.min.css' %}" rel="stylesheet" media="screen">
+</head>
+<body style="margin-top:70px;">
+<div class="container">
+{% include 'header.html' %}
+	<div class="col-md-3 wow fadeInLeft">
+		<div class="page-header">
+    		<h1>课程信息查询</h1>
+		</div>
+		<form name="courseInfoQueryForm" id="courseInfoQueryForm" action="{% url 'CourseInfo:frontList' %}" class="mar_t15" method="post">
+			 {% csrf_token %}
+			<div class="form-group">
+				<label for="courseNumber">课程编号:</label>
+				<input type="text" id="courseNumber" name="courseNumber" value="{{ courseNumber }}" class="form-control" placeholder="请输入课程编号">
+			</div>
+			<div class="form-group">
+				<label for="courseName">课程名称:</label>
+				<input type="text" id="courseName" name="courseName" value="{{ courseName }}" class="form-control" placeholder="请输入课程名称">
+			</div>
+            <div class="form-group">
+            	<label for="courseTeacher_teacherNumber">上课老师：</label>
+                <select id="courseTeacher_teacherNumber" name="courseTeacher.teacherNumber" class="form-control">
+                	<option value="">不限制</option>
+                    {% for teacher in teachers %}
+                        {% if teacher.teacherNumber == courseTeacher_teacherNumber %}
+                             <option value="{{teacher.teacherNumber }}" selected>{{ teacher.teacherName }}</option>
+                        {% else %}
+                            <option value="{{ teacher.teacherNumber }}">{{ teacher.teacherName }}</option>
+                        {% endif %}
+	 				{% endfor %}
+ 			</select>
+            </div>
+            <input type=hidden name=currentPage value="{{ currentPage }}" />
+            <button type="submit" class="btn btn-primary">查询</button>
+        </form>
+	</div>
+
+	<div class="col-md-9 wow fadeInRight">
+		<ul class="breadcrumb">
+  			<li><a href="{% url 'Index:index' %}">首页</a></li>
+  			<li><a href="{% url 'CourseInfo:frontList' %}">课程信息信息列表</a></li>
+  			<li class="active">查询结果显示</li>
+  			<a class="pull-right" href="{% url 'CourseInfo:frontAdd' %}" style="display:none;">添加课程信息</a>
+		</ul>
+		<div class="row">
+            {% for courseInfo in courseInfos_page %}
+                {% if forloop.counter|add:-1|divisibleby:4 %}
+			<div class="col-md-3 bottom15" style="clear: left;">
+                {% else %}
+            <div class="col-md-3 bottom15">
+                {% endif %}
+			  <a  href="{% url 'CourseInfo:frontShow' courseInfo.courseNumber %}"><img class="img-responsive" src="{{ courseInfo.coursePhoto.url }}" /></a>
+			     <div class="showFields">
+			     	<div class="field">
+	            		课程编号:{{ courseInfo.courseNumber }}
+			     	</div>
+			     	<div class="field">
+	            		课程名称:{{ courseInfo.courseName }}
+			     	</div>
+			     	<div class="field">
+	            		上课老师:{{ courseInfo.courseTeacher.teacherName }}
+			     	</div>
+			     	<div class="field">
+	            		上课时间:{{ courseInfo.courseTime }}
+			     	</div>
+			     	<div class="field">
+	            		上课地点:{{ courseInfo.coursePlace }}
+			     	</div>
+			     	<div class="field">
+	            		课程学分:{{ courseInfo.courseScore }}
+			     	</div>
+			        <a class="btn btn-primary top5" href="{% url 'CourseInfo:frontShow' courseInfo.courseNumber  %}">详情</a>
+			        <a class="btn btn-primary top5" onclick="courseInfoEdit('{{ courseInfo.courseNumber }}');" style="display: none;">修改</a>
+			        <a class="btn btn-primary top5" onclick="courseInfoDelete('{{ courseInfo.courseNumber }}');" style="display: none;">删除</a>
+			     </div>
+			</div>
+			{% endfor %}
+
+			<div class="row">
+				<div class="col-md-12">
+					<nav class="pull-left">
+						<ul class="pagination">
+							<li><a href="#" onclick="GoToPage({{ currentPage|add:-1 }},{{ totalPage }});" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+							{% for page in pageList %}
+                                            {% if currentPage == page %}
+						                        <li class="active"><a href="#"  onclick="GoToPage({{ page }},{{ totalPage }});">{{ page }}</a></li>
+						                    {% else %}
+                                                <li><a href="#"  onclick="GoToPage({{ page }},{{ totalPage }});">{{ page }}</a></li>
+                                            {% endif %}
+                                            {% endfor %}
+						                    <li><a href="#" onclick="GoToPage({{ currentPage|add:1 }},{{ totalPage }});"><span aria-hidden="true">&raquo;</span></a></li>
+						</ul>
+					</nav>
+					<div class="pull-right" style="line-height:75px;" >共有{{ recordNumber }}条记录，当前第{{ currentPage }}/{{ totalPage }} 页</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+  </div>
+</div>
+<div id="courseInfoEditDialog" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title"><i class="fa fa-edit"></i>&nbsp;课程信息信息编辑</h4>
+      </div>
+      <div class="modal-body" style="height:450px; overflow: scroll;">
+      	<form class="form-horizontal" name="courseInfoEditForm" id="courseInfoEditForm" enctype="multipart/form-data" method="post"  class="mar_t15">
+		    {% csrf_token %}
+		  <div class="form-group">
+			 <label for="courseInfo_courseNumber_edit" class="col-md-3 text-right">课程编号:</label>
+			 <div class="col-md-9"> 
+			 	<input type="text" id="courseInfo_courseNumber_edit" name="courseInfo.courseNumber" class="form-control" placeholder="请输入课程编号" readOnly>
+			 </div>
+		  </div> 
+		  <div class="form-group">
+		  	 <label for="courseInfo_courseName_edit" class="col-md-3 text-right">课程名称:</label>
+		  	 <div class="col-md-9">
+			    <input type="text" id="courseInfo_courseName_edit" name="courseInfo.courseName" class="form-control" placeholder="请输入课程名称">
+			 </div>
+		  </div>
+		  <div class="form-group">
+		  	 <label for="courseInfo_coursePhoto_edit" class="col-md-3 text-right">课程图片:</label>
+		  	 <div class="col-md-9">
+			    <img  class="img-responsive" id="courseInfo_coursePhotoImg" border="0px"/><br/>
+			    <input id="courseInfo_coursePhoto" name="courseInfo.coursePhoto" type="file" size="50" />
+		  	 </div>
+		  </div>
+		  <div class="form-group">
+		  	 <label for="courseInfo_courseTeacher_teacherNumber_edit" class="col-md-3 text-right">上课老师:</label>
+		  	 <div class="col-md-9">
+			    <select id="courseInfo_courseTeacher_teacherNumber_edit" name="courseInfo.courseTeacher.teacherNumber" class="form-control">
+                    {% for teacher in teachers %}
+                        <option value="{{ teacher.teacherNumber }}">{{ teacher.teacherName }}</option>
+                    {% endfor %}
+			    </select>
+		  	 </div>
+		  </div>
+		  <div class="form-group">
+		  	 <label for="courseInfo_courseTime_edit" class="col-md-3 text-right">上课时间:</label>
+		  	 <div class="col-md-9">
+			    <input type="text" id="courseInfo_courseTime_edit" name="courseInfo.courseTime" class="form-control" placeholder="请输入上课时间">
+			 </div>
+		  </div>
+		  <div class="form-group">
+		  	 <label for="courseInfo_coursePlace_edit" class="col-md-3 text-right">上课地点:</label>
+		  	 <div class="col-md-9">
+			    <input type="text" id="courseInfo_coursePlace_edit" name="courseInfo.coursePlace" class="form-control" placeholder="请输入上课地点">
+			 </div>
+		  </div>
+		  <div class="form-group">
+		  	 <label for="courseInfo_courseScore_edit" class="col-md-3 text-right">课程学分:</label>
+		  	 <div class="col-md-9">
+			    <input type="text" id="courseInfo_courseScore_edit" name="courseInfo.courseScore" class="form-control" placeholder="请输入课程学分">
+			 </div>
+		  </div>
+		  <div class="form-group">
+		  	 <label for="courseInfo_courseMemo_edit" class="col-md-3 text-right">附加信息:</label>
+		  	 <div class="col-md-9">
+			    <input type="text" id="courseInfo_courseMemo_edit" name="courseInfo.courseMemo" class="form-control" placeholder="请输入附加信息">
+			 </div>
+		  </div>
+		</form> 
+	    <style>#courseInfoEditForm .form-group {margin-bottom:5px;}  </style>
+      </div>
+      <div class="modal-footer"> 
+      	<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+      	<button type="button" class="btn btn-primary" onclick="ajaxCourseInfoModify();">提交</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+{% include 'footer.html' %}
+<script src="{% static 'plugins/jquery.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap.js' %}"></script>
+<script src="{% static 'plugins/wow.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap-datetimepicker.min.js' %}"></script>
+<script src="{% static 'plugins/locales/bootstrap-datetimepicker.zh-CN.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/jsdate.js' %}"></script>
+<script>
+/*跳转到查询结果的某页*/
+function GoToPage(currentPage,totalPage) {
+    if(currentPage==0) return;
+    if(currentPage>totalPage) return;
+    document.courseInfoQueryForm.currentPage.value = currentPage;
+    document.courseInfoQueryForm.submit();
+}
+
+/*可以直接跳转到某页*/
+function changepage(totalPage)
+{
+    var pageValue=document.courseInfoQueryForm.pageValue.value;
+    if(pageValue>totalPage) {
+        alert('你输入的页码超出了总页数!');
+        return ;
+    }
+    document.courseInfoQueryForm.currentPage.value = pageValue;
+    documentcourseInfoQueryForm.submit();
+}
+
+/*弹出修改课程信息界面并初始化数据*/
+function courseInfoEdit(courseNumber) {
+	$.ajax({
+		url :  '/CourseInfo/update/' + courseNumber,
+		type : "get",
+		dataType: "json",
+		success : function (courseInfo, response, status) {
+			if (courseInfo) {
+				$("#courseInfo_courseNumber_edit").val(courseInfo.courseNumber);
+				$("#courseInfo_courseName_edit").val(courseInfo.courseName);
+				$("#courseInfo_coursePhotoImg").attr("src", courseInfo.coursePhoto);
+				$.ajax({
+					url: "{% url 'Teacher:listAll' %}",
+					type: "get",
+					success: function(teachers,response,status) { 
+						$("#courseInfo_courseTeacher_teacherNumber_edit").empty();
+						var html="";
+		        		$(teachers).each(function(i,teacher){
+		        			html += "<option value='" + teacher.teacherNumber + "'>" + teacher.teacherName + "</option>";
+		        		});
+		        		$("#courseInfo_courseTeacher_teacherNumber_edit").html(html);
+		        		$("#courseInfo_courseTeacher_teacherNumber_edit").val(courseInfo.courseTeacherPri);
+					}
+				});
+				$("#courseInfo_courseTime_edit").val(courseInfo.courseTime);
+				$("#courseInfo_coursePlace_edit").val(courseInfo.coursePlace);
+				$("#courseInfo_courseScore_edit").val(courseInfo.courseScore);
+				$("#courseInfo_courseMemo_edit").val(courseInfo.courseMemo);
+				$('#courseInfoEditDialog').modal('show');
+			} else {
+				alert("获取信息失败！");
+			}
+		}
+	});
+}
+
+/*删除课程信息信息*/
+function courseInfoDelete(courseNumber) {
+    var csrf = $('input[name="csrfmiddlewaretoken"]').val();
+	if(confirm("确认删除这个记录")) {
+		$.ajax({
+			type : "POST",
+			url : "/CourseInfo/deletes",
+			data : {
+				courseNumbers : courseNumber,
+                "csrfmiddlewaretoken": csrf
+			},
+			success : function (obj) {
+				if (obj.success) {
+					alert("删除成功");
+					$("#courseInfoQueryForm").submit();
+					//location.href= basePath + "CourseInfo/frontlist";
+				}
+				else 
+					alert(obj.message);
+			},
+		});
+	}
+}
+
+/*ajax方式提交课程信息信息表单给服务器端修改*/
+function ajaxCourseInfoModify() {
+	$.ajax({
+		url :   '/CourseInfo/update/' + $("#courseInfo_courseNumber_edit").val(),
+		type : "post",
+		dataType: "json",
+		data: new FormData($("#courseInfoEditForm")[0]),
+		success : function (obj, response, status) {
+            if(obj.success){
+                alert("信息修改成功！");
+                $("#courseInfoQueryForm").submit();
+            }else{
+                alert(obj.message);
+            } 
+		},
+		processData: false,
+		contentType: false,
+	});
+}
+
+$(function(){
+	/*小屏幕导航点击关闭菜单*/
+    $('.navbar-collapse a').click(function(){
+        $('.navbar-collapse').collapse('hide');
+    });
+    new WOW().init();
+
+})
+</script>
+</body>
+</html>
+

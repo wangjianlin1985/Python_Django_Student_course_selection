@@ -1,0 +1,59 @@
+{% load staticfiles %}
+{% include 'check_logstate.html' %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/collegeInfo.css' %}" />
+<div id="collegeInfo_EditDiv">
+	<form id="collegeInfoModifyForm" enctype="multipart/form-data"  method="post">
+        {% csrf_token %}
+		<div>
+			<span class="label">学院编号:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="collegeInfo_collegeNumber_modify" name="collegeInfo.collegeNumber" value="{{ collegeNumber }}" style="width:200px" />
+			</span>
+		</div>
+
+		<div>
+			<span class="label">学院名称:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="collegeInfo_collegeName_modify" name="collegeInfo.collegeName" style="width:200px" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">成立日期:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="collegeInfo_collegeBirthDate_modify" name="collegeInfo.collegeBirthDate" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">院长姓名:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="collegeInfo_collegeMan_modify" name="collegeInfo.collegeMan" style="width:200px" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">联系电话:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="collegeInfo_collegeTelephone_modify" name="collegeInfo.collegeTelephone" style="width:200px" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">附加信息:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="collegeInfo_collegeMemo_modify" name="collegeInfo.collegeMemo" style="width:200px" />
+
+			</span>
+
+		</div>
+		<div class="operation">
+			<a id="collegeInfoModifyButton" class="easyui-linkbutton">更新</a> 
+		</div>
+	</form>
+</div>
+<script src="{% static 'js/CollegeInfo/collegeInfo_modify.js' %}"></script>
